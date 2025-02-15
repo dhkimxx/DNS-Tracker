@@ -3,6 +3,7 @@ package tracker
 import (
 	"fmt"
 	"net"
+	"strings"
 	"tracker/notifier"
 	"tracker/repository"
 	"tracker/util"
@@ -29,11 +30,9 @@ func CheckDNS(host string) {
 		}
 
 		if len(existingIps) == 0 {
-			for _, lookupIp := range lookupIps {
-				err = notifier.Notifyf("New destination ip(%s) of host(%s) is detected\n", lookupIp, host)
-				if err != nil {
-					fmt.Println(err)
-				}
+			err = notifier.Notifyf("[CREATED]\nhost: %s\n\nnew ip list:\n%s", host, strings.Join(lookupIps, "\n"))
+			if err != nil {
+				fmt.Println(err)
 			}
 			_, err = repo.Create(host, lookupIps)
 			if err != nil {
@@ -44,18 +43,10 @@ func CheckDNS(host string) {
 			isEqual, addedIps, deletedIps := util.IsEqualIpAddress(existingIps, lookupIps)
 			if !isEqual {
 
-				for _, addedIp := range addedIps {
-					err = notifier.Notifyf("destination ip(%s) of host(%s) is added\n", addedIp, host)
-					if err != nil {
-						fmt.Println(err)
-					}
-				}
-
-				for _, deletedIp := range deletedIps {
-					err = notifier.Notifyf("destination ip(%s) of host(%s) is deleted\n", deletedIp, host)
-					if err != nil {
-						fmt.Println(err)
-					}
+				err = notifier.Notifyf("[UPDATED]\nhost: %s\n\ndeleted ip list:\n%s\n\nadded ip list:\n%s\n\ntotal ip list:\n%s",
+					host, strings.Join(deletedIps, "\n"), strings.Join(addedIps, "\n"), strings.Join(lookupIps, "\n"))
+				if err != nil {
+					fmt.Println(err)
 				}
 
 				_, err = repo.Update(host, lookupIps)
