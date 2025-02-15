@@ -1,5 +1,7 @@
 package repository
 
+import implements "tracker/repository/impl"
+
 type ipRepository interface {
 	FindByHost(host string) ([]string, error)
 	Create(host string, newIps []string) ([]string, error)
@@ -8,5 +10,5 @@ type ipRepository interface {
 }
 
 func NewIpRepository() ipRepository {
-	return newIpMemoryRepositoryImpl()
+	return implements.NewIpMemoryRepositoryImpl()
 }

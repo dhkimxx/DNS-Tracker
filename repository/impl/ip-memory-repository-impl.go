@@ -1,4 +1,4 @@
-package repository
+package implements
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ type ipMemoryRepositoryImpl struct {
 	hostIpMap map[string][]string
 }
 
-func newIpMemoryRepositoryImpl() *ipMemoryRepositoryImpl {
+func NewIpMemoryRepositoryImpl() *ipMemoryRepositoryImpl {
 	return &ipMemoryRepositoryImpl{
 		hostIpMap: make(map[string][]string),
 	}
