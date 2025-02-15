@@ -10,10 +10,12 @@ type ipMemoryRepositoryImpl struct {
 	hostIpMap map[string][]string
 }
 
-func NewIpMemoryRepositoryImpl() *ipMemoryRepositoryImpl {
-	return &ipMemoryRepositoryImpl{
-		hostIpMap: make(map[string][]string),
-	}
+var singleInstance = ipMemoryRepositoryImpl{
+	hostIpMap: make(map[string][]string),
+}
+
+func GetIpMemoryRepositoryImpl() *ipMemoryRepositoryImpl {
+	return &singleInstance
 }
 
 func (r *ipMemoryRepositoryImpl) FindByHost(host string) ([]string, error) {

@@ -9,6 +9,6 @@ type ipRepository interface {
 	Delete(host string) error
 }
 
-func NewIpRepository() ipRepository {
-	return implements.NewIpMemoryRepositoryImpl()
+func GetIpRepository() ipRepository {
+	return implements.GetIpMemoryRepositoryImpl()
 }
