@@ -6,6 +6,7 @@ import (
 	"time"
 	"tracker/config"
 	"tracker/repository"
+	"tracker/util"
 )
 
 func main() {
@@ -44,7 +45,7 @@ func main() {
 
 				} else {
 					// compare ips
-					isEqual, addedIps, deletedIps := isEqualIpAddress(existingIps, lookupIps)
+					isEqual, addedIps, deletedIps := util.IsEqualIpAddress(existingIps, lookupIps)
 					if !isEqual {
 
 						for _, addedIp := range addedIps {
@@ -68,27 +69,4 @@ func main() {
 		}
 		time.Sleep(1 * time.Second)
 	}
-}
-
-func isEqualIpAddress(existingIps, targetIps []string) (isEqual bool, addedIps, deletedIps []string) {
-	countMap := make(map[string]int)
-
-	for _, tartargetIp := range targetIps {
-		countMap[tartargetIp]++
-	}
-
-	for _, exexistingIp := range existingIps {
-		countMap[exexistingIp]--
-	}
-
-	for ip, count := range countMap {
-		if count > 0 {
-			addedIps = append(addedIps, ip)
-		} else if count < 0 {
-			deletedIps = append(deletedIps, ip)
-		}
-	}
-
-	isEqual = len(addedIps) == 0 && len(deletedIps) == 0
-	return
 }
