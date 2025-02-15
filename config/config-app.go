@@ -13,11 +13,14 @@ type Config struct {
 		TrackingHosts []string `yaml:"traking_hosts"`
 	} `yaml:"tracker"`
 	Notifier struct {
-		Slack struct {
-			Enable     bool     `yaml:"enable"`
+		NotifierType string `yaml:"notifier_type"`
+		Slack        struct {
 			Token      string   `yaml:"token"`
 			ChannelIds []string `yaml:"channel_ids"`
 		} `yaml:"slack"`
+		Lark struct {
+			WebhookUrl string `yaml:"webhook_url"`
+		} `yaml:"lark"`
 	} `yaml:"notifier"`
 }
 

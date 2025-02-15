@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println(config.AppConfig.Tracker.TrackingHosts)
-	ConcurrencyScheduler()
+	BasicScheduler()
 }
 
 func BasicScheduler() {

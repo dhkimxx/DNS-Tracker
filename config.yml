@@ -1,0 +1,15 @@
+tracker:
+  traking_hosts:
+    - api.github.com
+    - api.openai.com
+    - api.slack.com
+
+notifier:
+  notifier_type: slack # [slack, lark, both] 'both' is option to notify on both Slack and Lark 
+  slack:
+    token: YOUR_SLACK_APP_TOKEN
+    channel_ids:
+      - YOUR_SLACK_CHANNEL_ID_1
+      - YOUR_SLACK_CHANNEL_ID_2
+  lark:
+    webhook_url: YOUR_LARK_BOT_WEBHOOK_URL

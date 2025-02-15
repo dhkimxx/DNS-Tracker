@@ -5,61 +5,45 @@ import (
 	"strings"
 	"sync"
 	"tracker/config"
-
-	"github.com/slack-go/slack"
+	implements "tracker/notifier/impl"
 )
 
-type SlackNotifierClient struct {
-	isInitialized bool
-	api           *slack.Client
-	channelIds    []string
+type Notifier interface {
+	SendMessage(message string) error
 }
 
-var client SlackNotifierClient
+var notifiers []Notifier
 
 func init() {
-	if config.AppConfig.Notifier.Slack.Enable {
-		client.isInitialized = true
-		client.api = slack.New(config.AppConfig.Notifier.Slack.Token)
-		client.channelIds = config.AppConfig.Notifier.Slack.ChannelIds
+	notifierType := config.AppConfig.Notifier.NotifierType
+	switch notifierType {
+	case "slack":
+		notifiers = append(notifiers, implements.GetSlackNotifierImpl())
+	case "lark":
+		notifiers = append(notifiers, implements.GetLarkkNotifierImpl())
+	case "both":
+		notifiers = append(notifiers, implements.GetSlackNotifierImpl())
+		notifiers = append(notifiers, implements.GetLarkkNotifierImpl())
+	default:
+		panic(fmt.Errorf("unsupported notifier type: [%s]", notifierType))
 	}
 }
 
 func Notify(a ...any) error {
 	message := fmt.Sprint(a...)
-	err := SendMessage(message)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
-func Notifyf(format string, a ...any) error {
-	message := fmt.Sprintf(format, a...)
-	err := SendMessage(message)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func SendMessage(message string) error {
-	if !client.isInitialized {
-		return fmt.Errorf("[notifier-slack] slack notifier client is not enabled")
-	}
-
-	errChan := make(chan string, len(client.channelIds))
+	errChan := make(chan string, len(notifiers))
 	var wg sync.WaitGroup
 
-	for _, channelId := range client.channelIds {
+	for _, notifier := range notifiers {
 		wg.Add(1)
-		go func(channelId string) {
+		go func(notifier Notifier) {
 			defer wg.Done()
-			_, _, err := client.api.PostMessage(channelId, slack.MsgOptionText(message, false))
+			err := notifier.SendMessage(message)
 			if err != nil {
-				errChan <- fmt.Sprintf("[notifier-slack] channel %s: %v", channelId, err)
+				errChan <- fmt.Sprintf("[notifier] %v", err)
 			}
-		}(channelId)
+		}(notifier)
 	}
 
 	wg.Wait()
@@ -72,6 +56,15 @@ func SendMessage(message string) error {
 
 	if len(errors) > 0 {
 		return fmt.Errorf("%s", strings.Join(errors, "\n"))
+	}
+	return nil
+}
+
+func Notifyf(format string, a ...any) error {
+	message := fmt.Sprintf(format, a...)
+	err := Notify(message)
+	if err != nil {
+		return err
 	}
 	return nil
 }
