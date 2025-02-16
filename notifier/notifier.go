@@ -32,7 +32,7 @@ func init() {
 func Notify(a ...any) error {
 	message := fmt.Sprint(a...)
 
-	errChan := make(chan string, len(notifiers))
+	errChan := make(chan error, len(notifiers))
 	var wg sync.WaitGroup
 
 	for _, notifier := range notifiers {
@@ -41,7 +41,7 @@ func Notify(a ...any) error {
 			defer wg.Done()
 			err := notifier.SendMessage(message)
 			if err != nil {
-				errChan <- fmt.Sprintf("[notifier] %v", err)
+				errChan <- err
 			}
 		}(notifier)
 	}
@@ -51,7 +51,7 @@ func Notify(a ...any) error {
 
 	var errors []string
 	for errMsg := range errChan {
-		errors = append(errors, errMsg)
+		errors = append(errors, errMsg.Error())
 	}
 
 	if len(errors) > 0 {

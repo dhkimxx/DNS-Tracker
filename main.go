@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"time"
 	"tracker/config"
 	"tracker/tracker"
@@ -20,24 +19,7 @@ func BasicScheduler() {
 			tracker.CheckDNS(host)
 
 		}
-		fmt.Println(time.Since(t))
-		time.Sleep(1 * time.Second)
-	}
-}
-
-func ConcurrencyScheduler() {
-	for {
-		t := time.Now()
-		var wg sync.WaitGroup
-		for _, host := range config.AppConfig.Tracker.TrackingHosts {
-			wg.Add(1)
-			go func(host string) {
-				defer wg.Done()
-				tracker.CheckDNS(host)
-			}(host)
-		}
-		wg.Wait()
-		fmt.Println(time.Since(t))
+		fmt.Printf("[scheduler] spent time: %s\n", time.Since(t))
 		time.Sleep(1 * time.Second)
 	}
 }
