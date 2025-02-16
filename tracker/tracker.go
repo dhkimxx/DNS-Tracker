@@ -34,7 +34,7 @@ func CheckDNS(host string) {
 			if err != nil {
 				fmt.Println(err)
 			}
-			_, err = repo.Create(host, lookupIps)
+			err = repo.Create(host, lookupIps)
 			if err != nil {
 				panic(err)
 			}
@@ -49,7 +49,7 @@ func CheckDNS(host string) {
 					fmt.Println(err)
 				}
 
-				_, err = repo.Update(host, lookupIps)
+				err = repo.Update(host, lookupIps)
 				if err != nil {
 					panic(err)
 				}

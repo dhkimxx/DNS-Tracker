@@ -2,13 +2,13 @@ package repository
 
 import implements "tracker/repository/impl"
 
-type ipRepository interface {
+type IpRepository interface {
 	FindByHost(host string) ([]string, error)
-	Create(host string, newIps []string) ([]string, error)
-	Update(host string, updateIps []string) ([]string, error)
+	Create(host string, newIps []string) error
+	Update(host string, updateIps []string) error
 	Delete(host string) error
 }
 
-func GetIpRepository() ipRepository {
+func GetIpRepository() IpRepository {
 	return implements.GetIpMemoryRepositoryImpl()
 }
