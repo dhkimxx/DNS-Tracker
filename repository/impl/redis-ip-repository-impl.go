@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
+	"tracker/config"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -20,11 +22,19 @@ var (
 func GetRedisIpRepository(addr, password string, db int) *RedisIpRepositoryImpl {
 	redisIpRepoOnce.Do(func() {
 		rdb := redis.NewClient(&redis.Options{
-			Addr:     addr,
-			Password: password,
-			DB:       db,
+			Addr:     fmt.Sprintf("%s:%d", config.AppConfig.Redis.Host, config.AppConfig.Redis.Port),
+			Password: config.AppConfig.Redis.Password,
+			DB:       config.AppConfig.Redis.DB,
 		})
 		redisIpRepoInstance = &RedisIpRepositoryImpl{client: rdb}
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.AppConfig.Redis.Timeout)*time.Second)
+		defer cancel()
+
+		_, err := rdb.Ping(ctx).Result()
+		if err != nil {
+			panic(err)
+		}
 	})
 	return redisIpRepoInstance
 }
