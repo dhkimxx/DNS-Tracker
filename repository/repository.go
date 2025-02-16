@@ -10,5 +10,5 @@ type IpRepository interface {
 }
 
 func GetIpRepository() IpRepository {
-	return implements.GetIpMemoryRepositoryImpl()
+	return implements.GetRedisIpRepository("localhost:6379", "", 0)
 }
