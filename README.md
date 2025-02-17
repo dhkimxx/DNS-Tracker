@@ -2,7 +2,7 @@
 
 ![main_image](./docs/img/dns-tracker.drawio.png)
 
-`DNS-Tracker` is a tool that tracks changes in the IP addresses of specified domains and notifies updates via Slack or Lark. It utilizes Redis for efficient data storage and is designed for easy deployment using Docker.
+`DNS-Tracker` is a tool that tracks changes in the IP addresses of specified domains and notifies updates via `Slack` or `Lark`. It utilizes Redis for efficient data storage and is designed for easy deployment using Docker.
 
 ## Features
 - Periodically tracks IP changes for specified domains
